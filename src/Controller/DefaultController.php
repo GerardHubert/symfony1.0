@@ -6,21 +6,33 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController
 {
+
+    /**
+     * @Route("/", name="index")
+     */
     public function index()
     {
-        dd("Voici la page accueil");
+        dd("La page d'accueil fonctionne bien !");
     }
 
     /**
-     * @Route("/test/{age}", name="test", methods={"GET", "POST"}, defaults="inconnu",
-     * requirements="\d+", host="localhost")
+     * @Route("/test/{age<\d+>?inconnu}", name="test", methods={"GET", "POST"})
      */
     public function test(Request $request)
     {
         $age = $request->query->get("age", "inconnu");
         return new Response("Bonjour, ton age est $age ");
+    }
+
+    /**
+     * @Route("/debug", name="debug")
+     */
+    public function debug()
+    {
+        dd("la page de deboggage fonctionne");
     }
 }
