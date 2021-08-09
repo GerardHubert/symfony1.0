@@ -24,7 +24,7 @@ class DefaultController
      */
     public function test(Request $request)
     {
-        $age = $request->query->get("age", "inconnu");
+        $age = $request->attributes->get("age", "inconnu");
         return new Response("Bonjour, ton age est $age ");
     }
 
