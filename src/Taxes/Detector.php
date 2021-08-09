@@ -6,12 +6,19 @@ namespace App\Taxes;
 
 class Detector
 {
-    public function detect(int $amount): bool
+
+    private $seuil;
+
+    public function __construct(float $seuil)
     {
-        if ($amount <= 100) {
-            return false;
-        } elseif ($amount > 100) {
+        $this->seuil = $seuil;
+    }
+
+    public function detect(float $prix): bool
+    {
+        if ($prix > $this->seuil) {
             return true;
         }
+        return false;
     }
 }
