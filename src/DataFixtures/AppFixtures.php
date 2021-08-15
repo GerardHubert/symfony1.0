@@ -2,11 +2,12 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Category;
 use Faker\Factory;
 use App\Entity\Product;
 use Liior\Faker\Prices;
+use App\Entity\Category;
 use Bezhanov\Faker\Provider\Commerce;
+use Bluemmb\Faker\PicsumPhotosProvider;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -29,6 +30,7 @@ class AppFixtures extends Fixture
         $faker = Factory::create('fr_FR');
         $faker->addProvider(new \Liior\Faker\Prices($faker));
         $faker->addProvider(new \Bezhanov\Faker\Provider\Commerce($faker));
+        $faker->addProvider(new \Bluemmb\Faker\PicsumPhotosProvider($faker));
 
         // On crée un boucle qui va créer 3 catégories.
         // On fait persister les catégories
@@ -48,7 +50,9 @@ class AppFixtures extends Fixture
                 $product->setName($faker->productName())
                     ->setPrice($faker->price(200, 45000))
                     ->setSlug(strtolower($this->slugger->slug($product->getName())))
-                    ->setCategory($category);
+                    ->setCategory($category)
+                    ->setShortDescription($faker->paragraph())
+                    ->setMainPicture($faker->imageUrl(200, 200, true));
                 $manager->persist($product);
             };
         }
