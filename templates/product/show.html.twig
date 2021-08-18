@@ -22,12 +22,14 @@
 
 	<div class="row">
 		<div class="col-4">
-			<img class='img-fluid' src={{ product.mainPicture }} alt="Image de " {{ product.name }}>
+			<img class='img-fluid' src={{ product.mainPicture }} alt="Image de {{ product.name }}">
 		</div>
 		<div class="col">
-			<span class="badge bg-primary">
-				{{ product.category.name }}
-			</span>
+			<a href="{{ path('product_category', { 'slug' : product.category.slug }) }}">
+				<span class="badge bg-primary">
+					{{ product.category.name }}
+				</span>
+			</a>
 			<p>
 				{{ product.shortDescription }}
 			</p>
