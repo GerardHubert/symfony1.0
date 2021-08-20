@@ -2,17 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Entity\Category;
-use App\Repository\CategoryRepository;
+use App\Form\ProductType;
+use Doctrine\ORM\EntityManager;
 use App\Repository\ProductRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Repository\CategoryRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormFactoryInterface;
 
 class ProductController extends AbstractController
 {
@@ -62,45 +63,57 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/create", name="product_create")
      */
-    public function create(FormFactoryInterface $factory): Response
+    public function create(Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
     {
-        $builder = $factory->createBuilder();
-        $builder->add('name', TextType::class, [
-            'attr' => [
-                'class' => 'form-control',
-                'placeholder' => "Tapez le nom du nouveau produit"
-            ],
-            'label' => 'Nom du produit',
-        ])
-            ->add('shortDescription', TextareaType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => "Tapez une courte, mais parlante, description du produit"
-                ],
-                'label' => "Description du produit"
-            ])
-            ->add('price', MoneyType::class, [
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => "Tapez le prix en €"
-                ],
-                'label' => "Prix du produit"
-            ])
-            ->add('category', EntityType::class, [
-                'label' => "Catégorie",
-                'attr' => [
-                    'class' => 'form-control',
-                ],
-                'placeholder' => "-- Selectionnez une catégorie --",
-                'class' => Category::class,
-                'choice_label' => "name"
-            ]);
+        // $builder = $factory->createBuilder(ProductType::class);
+        $form = $this->createForm(ProductType::class);
 
-        $form = $builder->getForm();
+        // $form = $builder->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $product = $form->getData();
+            $product->setSlug(strtolower($slugger->slug($product->getName())));
+
+            $em->persist($product);
+            $em->flush($product);
+
+            return $this->redirectToRoute('product_show', [
+                'category_slug' => $product->getCategory()->getSlug(),
+                'slug' => $product->getSlug()
+            ]);
+        };
 
         $formView = $form->createView();
 
         return $this->render("product/create.html.twig", [
+            'formView' => $formView
+        ]);
+    }
+
+    /**
+     * @Route("/admin/product/{id}/edit")
+     */
+    public function edit(int $id, Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
+    {
+        $product = $this->productRepository->find($id);
+
+        $form = $this->createForm(ProductType::class, $product);
+        $formView = $form->createView();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $em->flush();
+            return $this->redirectToRoute("product_show", [
+                "category_slug" => $product->getCategory()->getSlug(),
+                "slug" => $product->getSlug()
+            ]);
+        }
+
+        return $this->render('product/edit.html.twig', [
+            'product' => $product,
             'formView' => $formView
         ]);
     }
