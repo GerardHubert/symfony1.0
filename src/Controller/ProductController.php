@@ -13,7 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductController extends AbstractController
 {
@@ -72,7 +74,7 @@ class ProductController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $product = $form->getData();
             $product->setSlug(strtolower($slugger->slug($product->getName())));
 
@@ -95,22 +97,60 @@ class ProductController extends AbstractController
     /**
      * @Route("/admin/product/{id}/edit")
      */
-    public function edit(int $id, Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
+    public function edit(int $id, Request $request, SluggerInterface $slugger, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
+        // $person = [
+        //     'nom' => "hu",
+        //     'prenom' => "gérard",
+        //     'adresse' => [
+        //         "rue" => 'de la gardette',
+        //         'code postal' => 13690,
+        //         'ville' => 'Graveson'
+        //     ]
+        // ];
+
+        // $constraints = new Collection([
+        //     'nom' => [
+        //         new NotBlank(['message' => 'Le nom ne doit pas être vide']),
+        //         new Length(
+        //             ['min' => 3, 'minMessage' => 'le nom doit faire au moins {{ limit }} caracteres']
+        //         )
+        //     ],
+        //     'prenom' => new NotBlank(['message' => 'Le prénom doit être renseigné']),
+        //     'adresse' => new Collection([
+        //         'rue' => new NotBlank(['message' => "l'adresse doit être renseignée"]),
+        //         'code postal' => new LessThan(['value' => 98000, 'message' => "le code postale doit être inférieur à {{ compared_value }}"]),
+        //         'ville' => new NotBlank(['message' => 'la ville doit être renseignée'])
+        //     ])
+        // ]);
+
+        // $validation = $validator->validate($person, $constraints);
+
+        // dd($validation);
+
+        // $age = 25;
+        // $validation = $validator->validate($age, [
+        //     new GreaterThanOrEqual([
+        //         'value' => 35,
+        //         'message' => "Soit honnête... On sait que tu as plus de {{ compared_value }} ans mais que tu as saisi {{ value }} ans"
+        //     ])
+        // ]);
+
         $product = $this->productRepository->find($id);
 
         $form = $this->createForm(ProductType::class, $product);
-        $formView = $form->createView();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em->flush();
             return $this->redirectToRoute("product_show", [
                 "category_slug" => $product->getCategory()->getSlug(),
                 "slug" => $product->getSlug()
             ]);
         }
+
+        $formView = $form->createView();
 
         return $this->render('product/edit.html.twig', [
             'product' => $product,

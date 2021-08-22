@@ -25,6 +25,7 @@ class ProductType extends AbstractType
                     'placeholder' => "Tapez le nom du nouveau produit"
                 ],
                 'label' => 'Nom du produit',
+                'required' => false
             ])
             ->add('shortDescription', TextareaType::class, [
                 'attr' => [
