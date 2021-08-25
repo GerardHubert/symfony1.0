@@ -20,11 +20,10 @@ class CategoryController extends AbstractController
     public function create(Request $request, SluggerInterface $slugger, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(CategoryType::class);
-        $formView = $form->createView();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $category = $form->getData();
             $category->setSlug(
                 strtolower(
@@ -38,6 +37,8 @@ class CategoryController extends AbstractController
             return $this->redirectToRoute('homepage');
         }
 
+        $formView = $form->createView();
+
         return $this->render('category/create.html.twig', [
             'formView' => $formView,
         ]);
@@ -50,11 +51,10 @@ class CategoryController extends AbstractController
     {
         $category = $categoryRepository->find($id);
         $form = $this->createForm(CategoryType::class, $category);
-        $formView = $form->createView();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $category->setSlug(
                 strtolower(
                     $slugger->slug($category->getName())
@@ -65,6 +65,8 @@ class CategoryController extends AbstractController
 
             return $this->redirectToRoute('homepage');
         }
+
+        $formView = $form->createView();
 
         return $this->render('category/edit.html.twig', [
             'category' => $category,
