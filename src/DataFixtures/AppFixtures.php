@@ -6,20 +6,24 @@ use Faker\Factory;
 use App\Entity\Product;
 use Liior\Faker\Prices;
 use App\Entity\Category;
+use App\Entity\User;
 use Bezhanov\Faker\Provider\Commerce;
 use Bluemmb\Faker\PicsumPhotosProvider;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
 {
 
     private $slugger;
+    private $encoder;
 
-    public function __construct(SluggerInterface $slugger)
+    public function __construct(SluggerInterface $slugger, UserPasswordEncoderInterface $encoder)
     {
         $this->slugger = $slugger;
+        $this->encoder = $encoder;
     }
 
     public function load(ObjectManager $manager)
@@ -55,6 +59,25 @@ class AppFixtures extends Fixture
                     ->setMainPicture($faker->imageUrl(400, 400, true));
                 $manager->persist($product);
             };
+        }
+
+        $admin = new User;
+        $hash = $this->encoder->encodePassword($admin, "password");
+        $admin->setEmail("admin@gmail.com")
+            ->setFullName("Admin")
+            ->setPassword($hash)
+            ->setRoles(['ROLE_ADMIN']);
+
+        $manager->persist($admin);
+
+        for ($u = 0; $u < 5; $u++) {
+            $user = new User;
+            $hash = $this->encoder->encodePassword($admin, "password");
+            $user->setEmail("user$u@gmail.com")
+                ->setFullName($faker->name())
+                ->setPassword($hash);
+
+            $manager->persist($user);
         }
 
         $manager->flush();

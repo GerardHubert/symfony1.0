@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Connexion
+{% endblock %}
+
+{% block body %}
+	<h1>Connexion</h1>
+	{{ form_start(formView, {attr: {'novalidate': 'novalidate'}}) }}
+
+	{{ form_errors(formView) }}
+
+	{{ form_widget(formView) }}
+
+	<button type="submit" class="btn btn-success mt-2">LogIn</button>
+
+	{{ form_end(formView) }}
+{% endblock %}
