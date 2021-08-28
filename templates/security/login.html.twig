@@ -6,6 +6,13 @@
 
 {% block body %}
 	<h1>Connexion</h1>
+
+	{% if error %}
+		<div class="alert alert-danger">
+			{{ error.message }}
+		</div>
+	{% endif %}
+
 	{{ form_start(formView, {attr: {'novalidate': 'novalidate'}}) }}
 
 	{{ form_errors(formView) }}

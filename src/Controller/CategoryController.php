@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CategoryController extends AbstractController
@@ -47,9 +50,36 @@ class CategoryController extends AbstractController
     /**
      * @Route("/admin/category/{id}/edit", name="category_edit")
      */
-    public function edit(int $id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function edit(int $id, CategoryRepository $categoryRepository, Request $request, EntityManagerInterface $em, SluggerInterface $slugger, Security $security): Response
     {
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN', null, "Vous n'avez pas le droit d'accéder à cette ressource");
+
+        // $user = $security->getUser();
+
+        // if ($user === null) {
+        //     return $this->redirectToRoute('security_login');
+        // }
+        // if (in_array('ROLE_ADMIN', $user->getRoles()) === false) {
+        //     throw new AccessDeniedHttpException("Vous n'êtes pas autorisé à accéder à cette ressource");
+        // }
+
         $category = $categoryRepository->find($id);
+
+        if ($category === null) {
+            throw new NotFoundHttpException("Cette catégorie n'existe pas");
+        }
+
+        // $user = $this->getUser(); //$security->getUser()
+        // $this->denyAccessUnlessGranted('CAN_EDIT', $category, "T'as pas le droit");
+
+        // if ($user === null) {
+        //     return $this->redirectToRoute("security_login");
+        // }
+
+        // if ($user !== $category->getOwner()) {
+        //     throw new AccessDeniedHttpException("Vous n'êtes pas le propriétaire de cette catégorie");
+        // }
+
         $form = $this->createForm(CategoryType::class, $category);
 
         $form->handleRequest($request);
