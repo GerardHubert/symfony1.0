@@ -20,7 +20,7 @@
 						</a>
 						<p class="card-text">{{ product.shortDescription }}</p>
 						<a href={{ path('product_show', {'category_slug' : product.category.slug, 'slug' : product.slug} ) }} class="btn btn-outline-primary btn-sm">Détails</a>
-						<a href="#" class="btn btn-outline-success btn-sm">Ajouter</a>
+						<a href="{{ path("cart_add", {'id': product.id}) }}" class="btn btn-outline-success btn-sm">Ajouter</a>
 					</div>
 				</div>
 			</div>

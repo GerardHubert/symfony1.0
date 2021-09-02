@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Mon panier
+{% endblock %}
+
+{% block body %}
+	<h1>Mon panier</h1>
+
+	{% if cart | length > 0 %}
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Produit</th>
+					<th>Prix</th>
+					<th>Quantité</th>
+					<th>Total</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for c in cart %}
+					<tr>
+						<td>{{ c.product.name }}</td>
+						<td>{{ c.product.price }}</td>
+						<td>
+							<a href="{{ path('cart_add', {'id': c.product.id}) }}?backToCart">
+								<i class="fas fa-plus btn btn-info mr-4"></i>
+							</a>
+							{{ c.quantity }}
+							<a href="{{ path('cart_decrement', {'id': c.product.id}) }}">
+								<i class="fas fa-minus btn btn-info ml-4"></i>
+							</a>
+						</td>
+						<td>
+							{{ c.total }}
+						</td>
+						<td>
+							<a href="{{ path('cart_delete', {'id': c.product.id}) }}">
+								<i class="fas fa-trash btn btn-warning"></i>
+							</a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan='3'>TOTAL</td>
+				<td>{{ cartService.total }}</td>
+			</tr>
+		</tfoot>
+	</table>
+{% else %}
+	<h2>Le panier est vide</h2>
+{% endif %}{% endblock %}

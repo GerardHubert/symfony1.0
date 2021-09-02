@@ -70,6 +70,7 @@ class CategoryController extends AbstractController
         }
 
         // $user = $this->getUser(); //$security->getUser()
+        // Le seecuroty controller explore tous les voter en envoyant l'attribut et le subject qu'on lui pass. ici 'CAN_EDIT et $category
         // $this->denyAccessUnlessGranted('CAN_EDIT', $category, "T'as pas le droit");
 
         // if ($user === null) {
