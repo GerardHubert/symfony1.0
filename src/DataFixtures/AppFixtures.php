@@ -6,9 +6,13 @@ use Faker\Factory;
 use App\Entity\Product;
 use Liior\Faker\Prices;
 use App\Entity\Category;
+use App\Entity\Purchase;
+use App\Entity\PurchaseItem;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Bezhanov\Faker\Provider\Commerce;
 use Bluemmb\Faker\PicsumPhotosProvider;
+use DateTimeImmutable;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -19,11 +23,13 @@ class AppFixtures extends Fixture
 
     private $slugger;
     private $encoder;
+    private $userRepository;
 
-    public function __construct(SluggerInterface $slugger, UserPasswordEncoderInterface $encoder)
+    public function __construct(SluggerInterface $slugger, UserPasswordEncoderInterface $encoder, UserRepository $userRepository)
     {
         $this->slugger = $slugger;
         $this->encoder = $encoder;
+        $this->userRepository = $userRepository;
     }
 
     public function load(ObjectManager $manager)
@@ -43,6 +49,8 @@ class AppFixtures extends Fixture
         // On fait persister les produits.
         // On flush le tout
 
+        $products = [];
+
         for ($c = 0; $c < 3; $c++) {
             $category = new Category;
             $category->setName($faker->department)
@@ -58,6 +66,8 @@ class AppFixtures extends Fixture
                     ->setShortDescription($faker->sentence(20))
                     ->setMainPicture($faker->imageUrl(400, 400, true));
                 $manager->persist($product);
+
+                $products[] = $product;
             };
         }
 
@@ -70,6 +80,8 @@ class AppFixtures extends Fixture
 
         $manager->persist($admin);
 
+        $users = [];
+
         for ($u = 0; $u < 5; $u++) {
             $user = new User;
             $hash = $this->encoder->encodePassword($admin, "password");
@@ -77,7 +89,41 @@ class AppFixtures extends Fixture
                 ->setFullName($faker->name())
                 ->setPassword($hash);
 
+            $users[] = $user;
+
             $manager->persist($user);
+        }
+
+        for ($p = 0; $p < mt_rand(15, 20); $p++) {
+            $purchase = new Purchase;
+
+            $purchase->setFullName($faker->name())
+                ->setAddress($faker->streetAddress())
+                ->setPostalCode($faker->postcode())
+                ->setCity($faker->city())
+                ->setTotal(mt_rand(200, 45299))
+                ->setPurchasedAt($faker->dateTimeBetween('-6 months', 'now'));
+
+            if ($faker->boolean(75)) {
+                $purchase->setStatus(Purchase::STATUS_PAID);
+            }
+            $purchase->setUSer($faker->randomElement($users));
+            $selectedProducts = $faker->randomElements($products, rand(3, 5));
+
+            foreach ($selectedProducts as $product) {
+                $purchaseItem = new PurchaseItem();
+
+                $purchaseItem->setProduct($product)
+                    ->setProductName($product->getName())
+                    ->setProductPrice($product->getPrice())
+                    ->setPurchase($purchase)
+                    ->setQuantity(rand(1, 4))
+                    ->setTotal($product->getPrice() * $purchaseItem->getQuantity());
+
+                $manager->persist($purchaseItem);
+            }
+
+            $manager->persist($purchase);
         }
 
         $manager->flush();

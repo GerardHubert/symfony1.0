@@ -44,6 +44,7 @@ class CartService
         return $cart;
     }
 
+    /** @return CartItem[] */
     public function getCartItems(): array
     {
         $cart = [];
@@ -66,7 +67,7 @@ class CartService
     {
         $total = 0;
 
-        foreach ($this->session->get('cart') as $id => $quantity) {
+        foreach ($this->session->get('cart', []) as $id => $quantity) {
             $product = $this->productRepository->find($id);
             $total += $product->getPrice() * $quantity;
         }
@@ -98,5 +99,10 @@ class CartService
                 $this->flashBag->add('success', "La quantité a bien été diminué de 1");
             }
         }
+    }
+
+    public function clear()
+    {
+        $this->session->remove('cart');
     }
 }
