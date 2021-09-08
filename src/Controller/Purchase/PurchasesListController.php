@@ -6,7 +6,6 @@ namespace App\Controller\Purchase;
 
 use App\Entity\PurchaseItem;
 use App\Entity\User;
-use Twig\Environment;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

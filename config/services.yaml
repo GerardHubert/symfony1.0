@@ -32,3 +32,8 @@ services:
     App\Taxes\Detector:
         arguments:
             $seuil: '100'
+
+    App\Stripe\StripeService:
+        arguments:
+            $pk: '%env(STRIPE_PUBLIC_KEY)%'
+            $sk: '%env(STRIPE_SECRET_KEY)%'
