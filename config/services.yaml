@@ -37,3 +37,11 @@ services:
         arguments:
             $pk: '%env(STRIPE_PUBLIC_KEY)%'
             $sk: '%env(STRIPE_SECRET_KEY)%'
+
+    # # on ajoute notre listener == on déclare notre classe comme un nouveau listener en l'étiquetant
+    # App\EventDispatcher\PrenomListener:
+    #     tags: [{
+    #         name: kernel.event_listener, # le nom de l'étiquette que je colle sur ce service == doit être enregistré auprès de l'eventDispatcher
+    #         event: kernel.request, # quel évènement doit-il écouter ? a quel moment appeler PrenomListener ?
+    #         method: addPrenomToAttributes # quelle fonction de PrenomListener appeler ?
+    #     }]

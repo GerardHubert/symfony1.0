@@ -51,15 +51,19 @@ class ProductController extends AbstractController
     /**
      * @Route("/{category_slug}/{slug}", name="product_show", priority="-1")
      */
-    public function show($slug): Response
+    public function show($slug, Request $request): Response
     {
-        $product = $this->productRepository->findOneBy([
-            "slug" => $slug
-        ]);
-
-        return $this->render('product/show.html.twig', [
-            'product' => $product
-        ]);
+        try {
+            //code...
+            $product = $this->productRepository->findOneBy([
+                "slug" => $slug
+            ]);
+            return $this->render('product/show.html.twig', [
+                'product' => $product
+            ]);
+        } catch (\Throwable $th) {
+            throw $this->createNotFoundException('Le produit demandé n\'existe pas');
+        }
     }
 
     /**
