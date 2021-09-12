@@ -53,15 +53,16 @@ class AppFixtures extends Fixture
 
         for ($c = 0; $c < 3; $c++) {
             $category = new Category;
-            $category->setName($faker->department)
-                ->setSlug(strtolower($this->slugger->slug($category->getName())));
+            $category->setName($faker->department);
+            // on set le slug via un event orm.doctrine.entity_listener
+            // ->setSlug(strtolower($this->slugger->slug($category->getName())));
             $manager->persist($category);
 
             for ($i = 0; $i < 25; $i++) {
                 $product = new Product();
                 $product->setName($faker->productName())
                     ->setPrice($faker->price(200, 45000))
-                    ->setSlug(strtolower($this->slugger->slug($product->getName())))
+                    // ->setSlug(strtolower($this->slugger->slug($product->getName())))
                     ->setCategory($category)
                     ->setShortDescription($faker->sentence(20))
                     ->setMainPicture($faker->imageUrl(400, 400, true));

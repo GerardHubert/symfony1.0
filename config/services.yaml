@@ -45,3 +45,26 @@ services:
     #         event: kernel.request, # quel évènement doit-il écouter ? a quel moment appeler PrenomListener ?
     #         method: addPrenomToAttributes # quelle fonction de PrenomListener appeler ?
     #     }]
+
+    # # on déclare un listener d'évènement doctrine : on écoute ici toutes les entités
+    # App\Doctrine\Listener\ProductSlugListener:
+    #     tags: [{
+    #         name: 'doctrine.event_listener',
+    #         event: 'prePersist'
+    #     }]
+
+    # Pour écouter une entité particulière : on change le nom du listener et on indique l'entité concernée
+    # Permer de ne pas déclencher l'évènement à chaque fois qu'une entité est créée (performances)
+    App\Doctrine\Listener\ProductSlugListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: 'prePersist',
+            entity: 'App\Entity\Product'
+        }]
+
+    App\Doctrine\Listener\CategorySlugListener:
+        tags: [{
+            name: 'doctrine.orm.entity_listener',
+            event: 'prePersist',
+            entity: 'App\Entity\Category'
+        }]

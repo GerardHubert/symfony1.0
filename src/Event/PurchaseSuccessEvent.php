@@ -15,7 +15,6 @@ class PurchaseSuccessEvent extends Event
     {
         $this->purchase = $purchase;
     }
-
     public function getPurchase(): Purchase
     {
         return $this->purchase;

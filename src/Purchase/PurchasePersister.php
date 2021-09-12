@@ -25,9 +25,10 @@ class PurchasePersister extends AbstractController
     public function createPurchase(Purchase $purchase, $cartItems)
     {
         // On lie la commande avec l'utilisateur connecté (on set le user dans la purchase)
-        $purchase->setUser($this->getUser())
-            ->setPurchasedAt(new DateTime('now'))
-            ->setTotal($this->cartService->getTotal());
+        $purchase->setUser($this->getUser());
+        //on set la date et le total de commande dans l'entité avec un évènement doctrine
+        // ->setPurchasedAt(new DateTime('now'))
+        // ->setTotal($this->cartService->getTotal());
         $this->em->persist($purchase);
 
         // on récupère chaque produit du panier grace a CartService->getCartItems a qui on dit de retourner un tableau d'items (@return CartItem[])

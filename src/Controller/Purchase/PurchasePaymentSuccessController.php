@@ -55,8 +55,6 @@ class PurchasePaymentSuccessController extends AbstractController
         // on dispatche l'évènement en passant : l'évènement, le nom de l'évènement
         $this->dispatcher->dispatch($purchaseEvent, 'purchase.success');
 
-        dd($purchaseEvent);
-
         $this->addFlash('success', 'Votre commande a bien été confirmée et payée !');
         return $this->redirectToRoute("purchase_index");
     }
