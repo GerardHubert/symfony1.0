@@ -20,7 +20,7 @@
 				<li class="nav-item">
 					<a href="{{ path('cart_show') }}" class="nav-link">
 						<i class="fas fa-shopping-cart"></i>
-						Panier ({{ cartService.getTotal }})
+						Panier ({{ cartService.getTotal|price }})
 					</a>
 				</li>
 				{% if app.user %}

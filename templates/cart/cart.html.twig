@@ -22,7 +22,7 @@
 				{% for c in cart %}
 					<tr>
 						<td>{{ c.product.name }}</td>
-						<td>{{ c.product.price }}</td>
+						<td>{{ c.product.price|price }}</td>
 						<td>
 							<a href="{{ path('cart_add', {'id': c.product.id}) }}?backToCart">
 								<i class="fas fa-plus btn btn-info mr-4"></i>
@@ -33,7 +33,7 @@
 							</a>
 						</td>
 						<td>
-							{{ c.total }}
+							{{ c.total|price }}
 						</td>
 						<td>
 							<a href="{{ path('cart_delete', {'id': c.product.id}) }}">
@@ -46,7 +46,7 @@
 			<tfoot>
 				<tr>
 					<td colspan='3'>TOTAL</td>
-					<td colspan='2'>{{ cartService.total }}</td>
+					<td colspan='2'>{{ cartService.total|price }}</td>
 				</tr>
 			</tfoot>
 		</table>
