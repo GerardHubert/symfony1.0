@@ -6,15 +6,21 @@ namespace App\EventDispatcher;
 
 use App\Event\ProductViewEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class ProductSubscriber implements EventSubscriberInterface
 {
     private $logger;
+    private $mailer;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, MailerInterface $mailer)
     {
         $this->logger = $logger;
+        $this->mailer = $mailer;
     }
     public static function getSubscribedEvents(): array
     {
@@ -25,7 +31,17 @@ class ProductSubscriber implements EventSubscriberInterface
 
     public function logView(ProductViewEvent $productViewEvent)
     {
-        $productName = $productViewEvent->getProduct()->getName();
-        $this->logger->info("un utilisateur consulte le produit : " . $productName);
+        // $productName = $productViewEvent->getProduct()->getName();
+
+        // $mail = new TemplatedEmail();
+        // $mail->from(new Address('symshop@symshop.fr'))
+        //     ->to(new Address('admin@symshop.fr'))
+        //     ->subject("Consultation du produit " . $productViewEvent->getProduct()->getId())
+        //     ->htmlTemplate('email/product_view.html.twig')
+        //     ->context([
+        //         'product' => $productViewEvent->getProduct()
+        //     ]);
+
+        // $this->mailer->send($mail);
     }
 }
