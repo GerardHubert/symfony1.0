@@ -27,7 +27,7 @@
 	<script>
 		const clientSecret = '{{ clientSecret }}';
 const redirectAfterSuccess = "{{ url('purchase_payment_success', {'id': purchase.id}) }}";
-const stripePublicKey = "pk_test_51JWE8hGjzZ3VCoWdha1TIg1p0XrEeHd4lFkrDOZ4QclQHdYPhprbjEUSf6KFOF9m5OCIX3WpFG7pPKsItMKDHYTb00kgfa6jhn";
+const stripePublicKey = "{{ stripePublicKey }}"
 	</script>
 
 	<script src="/JS/payment.js"></script>

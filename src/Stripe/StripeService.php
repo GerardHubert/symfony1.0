@@ -26,4 +26,14 @@ class StripeService
             'currency' => 'eur',
         ]);
     }
+
+    public function getStripePublicKey(): string
+    {
+        return $this->pk;
+    }
+
+    public function getStripeSecretKey(): string
+    {
+        return $this->sk;
+    }
 }
