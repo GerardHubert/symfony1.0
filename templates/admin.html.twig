@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"> {% block meta %}{% endblock %}
+		<title>
+			{% block title %}{% endblock %}
+		</title>
+		{% block stylesheets %}
+			<link rel="stylesheet" href="https://bootswatch.com/5/lumen/bootstrap.min.css">
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+		{% endblock %}
+
+	</head>
+	<body>
+		{% include "shared/_back_navbar.html.twig" %}
+		<div class="container">
+			{% for rubric, messages in app.flashes %}
+				<div class="alert alert-{{ rubric }}">
+					{% for message in messages %}
+						{{ message }}
+					{% endfor %}
+				</div>
+			{% endfor %}
+
+			{% block body %}{% endblock %}
+		</div>
+
+		{% block javascripts %}{% endblock %}
+	</body>
+</html>

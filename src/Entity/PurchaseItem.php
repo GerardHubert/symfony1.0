@@ -19,6 +19,7 @@ class PurchaseItem
 
     /**
      * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="purchaseItems")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $product;
 

@@ -105,12 +105,22 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @Route("/admin/product/{id}/edit")
+     * @Route("/admin/product/edit/index", name="product_index")
+     */
+    public function productIndex()
+    {
+        return $this->render("product/edit_product_index.html.twig", [
+            "products" => $this->productRepository->findAll()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/product/{id}/edit", name="product_edit")
      */
     public function edit(int $id, Request $request, SluggerInterface $slugger, EntityManagerInterface $em, ValidatorInterface $validator): Response
     {
         // $person = [
-        //     'nom' => "hu",
+        //     'nom' => "hubert",
         //     'prenom' => "gérard",
         //     'adresse' => [
         //         "rue" => 'de la gardette',
@@ -166,5 +176,24 @@ class ProductController extends AbstractController
             'product' => $product,
             'formView' => $formView
         ]);
+    }
+
+    /**
+     * @Route("/admin/product/{id}/delete", name="product_delete")
+     */
+    public function delete($id, EntityManagerInterface $em)
+    {
+        $product = $this->productRepository->find($id);
+
+        if ($product === null) {
+            $this->addFlash('error', 'Ce produit n\'existe pas');
+            return $this->redirectToRoute('product_index');
+        }
+
+        $em->remove($product);
+        $em->flush();
+        $this->addFlash('success', 'Le produit ' . $id . ' a bien été supprimé');
+
+        return $this->redirectToRoute('product_index');
     }
 }

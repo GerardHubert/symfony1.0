@@ -37,7 +37,8 @@ class CategoryController extends AbstractController
             $em->persist($category);
             $em->flush();
 
-            return $this->redirectToRoute('homepage');
+            $this->addFlash('success', 'La catégorie' . $category->getName() . 'a bien été créée');
+            return $this->redirectToRoute('category_index');
         }
 
         $formView = $form->createView();
@@ -94,7 +95,9 @@ class CategoryController extends AbstractController
 
             $em->flush();
 
-            return $this->redirectToRoute('homepage');
+            $this->addFlash('success', 'La catégorie' . $category->getName() . ' a bien été modifiée');
+
+            return $this->redirectToRoute('category_index');
         }
 
         $formView = $form->createView();
@@ -103,5 +106,36 @@ class CategoryController extends AbstractController
             'category' => $category,
             'formView' => $formView
         ]);
+    }
+
+    /**
+     * @Route("/admin/category/index", name="category_index")
+     */
+    public function index(CategoryRepository $categoryRepository)
+    {
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('category/category_index.html.twig', [
+            "categories" => $categories
+        ]);
+    }
+
+    /**
+     * @Route("/admin/category/{id}/delete", name="category_delete")
+     */
+    public function delete($id, CategoryRepository $categoryRepository, EntityManagerInterface $em)
+    {
+        $category = $categoryRepository->find($id);
+
+        if ($category === null) {
+            throw new NotFoundHttpException("Cette catégorie n'existe pas");
+        }
+
+        $em->remove($category);
+        $em->flush();
+
+        $this->addFlash('success', 'La catégorie  a bien été supprimée');
+
+        return $this->redirectToRoute("category_index");
     }
 }

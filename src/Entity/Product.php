@@ -58,9 +58,9 @@ class Product
      */
     private $shortDescription;
 
-    /**
-     * @ORM\OneToMany(targetEntity=PurchaseItem::class, mappedBy="product")
-     */
+    // /**
+    //  * @ORM\OneToMany(targetEntity=PurchaseItem::class, mappedBy="product")
+    //  */
     private $purchase;
 
     /**

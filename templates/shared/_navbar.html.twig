@@ -25,20 +25,39 @@
 				</li>
 				{% if app.user %}
 					<li class="nav item">
-						<a href="#" class="nav-link">Mes commandes</a>
+						<a href="{{ path('purchase_index') }}" class="nav-link">Mes commandes</a>
 					</li>
 					<li class="nav item">
-						<a href="{{ path('security_logout') }}" class="btn btn-danger">LogOut</a>
+						<a href="{{ path('security_logout') }}" class="nav-link">
+							<i class="fas fa-sign-out-alt"></i>
+							Se déconnecter
+						</a>
 					</li>
+					<li class="nav item">
+						<strong>
+							<a href="#" class="nav-link disabled text-dark">{{ app.user.fullName }}</a>
+						</strong>
+					</li>
+					{% if 'ROLE_ADMIN' in app.user.roles %}
+						<li class="nav-item">
+							<a href="#" class="nav-link">
+								<button class="badge bg-dark">
+									<i class="fas fa-tools me-2"></i>Espace Administration</button>
+							</a>
+						</li>
+					{% endif %}
 				{% else %}
 					<li class="nav_item">
 						<a href="#" class="nav-link">Inscription</a>
 					</li>
 					<li class="nav item">
-						<a href="{{ path('security_login') }}" class="btn btn-success">LogIn</a>
+						<a href="{{ path('security_login') }}" class="nav-link">
+							<i class="fas fa-sign-in-alt"></i>
+							Se connecter
+						</a>
 					</li>
 				{% endif %}
-			</ul>
-		</div>
+			</li>
+		</ul>
 	</div>
-</nav>
+</div></nav>
