@@ -40,7 +40,7 @@
 					</li>
 					{% if 'ROLE_ADMIN' in app.user.roles %}
 						<li class="nav-item">
-							<a href="#" class="nav-link">
+							<a href="{{ path('security_adminPage') }}" class="nav-link">
 								<button class="badge bg-dark">
 									<i class="fas fa-tools me-2"></i>Espace Administration</button>
 							</a>
