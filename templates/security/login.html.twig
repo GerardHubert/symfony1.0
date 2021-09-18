@@ -22,4 +22,8 @@
 	<button type="submit" class="btn btn-success mt-2">LogIn</button>
 
 	{{ form_end(formView) }}
+
+	{% block javascripts %}
+		<script src="/JS/formError.js"></script>
+	{% endblock %}
 {% endblock %}

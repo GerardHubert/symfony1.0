@@ -1,0 +1,23 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+	Inscription
+{% endblock %}
+
+{% block body %}
+	<h1>Créer un compte</h1>
+
+	{{ form_start(formView, {attr: {'novalidate': 'novalidate'}}) }}
+
+	{{ form_errors(formView) }}
+
+	{{ form_widget(formView) }}
+
+	<button type="submit" class="btn btn-success mt-2">Créer son compte</button>
+
+	{{ form_end(formView) }}
+
+	{% block javascripts %}
+		<script src="/JS/formError.js"></script>
+	{% endblock %}
+{% endblock %}
