@@ -1,0 +1,10 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+	Réinitialisation du mot de passe
+{% endblock %}
+
+{% block body %}
+	<h1>Réinitialiser mon mot de passe</h1>
+	{{ dump(token, userId) }}
+{% endblock %}

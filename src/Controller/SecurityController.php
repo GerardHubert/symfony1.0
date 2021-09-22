@@ -11,11 +11,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Entity\User;
+use App\Form\ForgottenPassType;
+use App\Form\ResetPassType;
 use App\Repository\UserRepository;
+use App\Security\SendTokenToUser;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class SecurityController extends AbstractController
 {
+    private $mailer;
+
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
     /**
      * @Route("/login", name="security_login")
      */
@@ -81,6 +95,54 @@ class SecurityController extends AbstractController
 
         return $this->render('security/signin.html.twig', [
             'formView' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/forgottenPassword", name="security_forgottenPassword")
+     */
+    public function forgottenPassword(Request $request, UserRepository $userRepository, SendTokenToUser $sendToken, EntityManagerInterface $em)
+    {
+        // Création du formulaire
+        $form = $this->createForm(ForgottenPassType::class);
+
+        $form->handleRequest($request);
+
+        // Vérification que le formulaire est valide et que l'adresse mail renvoie bien un user
+        if ($request->getMethod() === 'POST' && $form->isSubmitted() && $form->isValid()) {
+            $user = $userRepository->findOneBy(['email' => $form->getData()]);
+
+            if ($user === null) {
+                $this->addFlash('danger', "L'adresse " . $form->getData()['email'] . " est inconnue");
+                return $this->redirectToRoute("security_forgottenPassword");
+            }
+
+            // Si user trouvé, on envoie un lien par mail à l'utilisateur
+            // On définit un token
+
+            $token = uniqid();
+
+            $user->setToken($token);
+            $em->flush();
+
+            $sendToken->sendToken($user);
+            $this->addFlash('success', 'Un mail à l\'adresse indiquée vient de vous être envoyé');
+            return $this->redirectToRoute('security_forgottenPassword');
+        }
+
+        return $this->render('security/forgotten_pass_page.html.twig', [
+            'formView' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/security/resetPass/{userId}/{token}", name="security_resetPass")
+     */
+    public function resetPass($userId, $token, UserRepository $userRepository)
+    {
+        return $this->render('security/reset_pass_page.html.twig', [
+            'userId' => $userId,
+            'token' => $token
         ]);
     }
 }
