@@ -6,5 +6,10 @@
 
 {% block body %}
 	<h1>Réinitialiser mon mot de passe</h1>
-	{{ dump(token, userId) }}
+
+	{{ form_start(formView) }}
+	{{ form_errors(formView) }}
+	{{ form_widget(formView) }}
+	<button type='submit' class="btn btn-success mt-2">Réinitialiser</button>
+	{{ form_end(formView) }}
 {% endblock %}

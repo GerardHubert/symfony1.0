@@ -17,9 +17,11 @@ use App\Repository\UserRepository;
 use App\Security\SendTokenToUser;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Security\Csrf\Exception\TokenNotFoundException;
 
 class SecurityController extends AbstractController
 {
@@ -138,11 +140,43 @@ class SecurityController extends AbstractController
     /**
      * @Route("/security/resetPass/{userId}/{token}", name="security_resetPass")
      */
-    public function resetPass($userId, $token, UserRepository $userRepository)
+    public function resetPass($userId, $token, UserRepository $userRepository, Request $request, EntityManagerInterface $em)
     {
+        // Vérifier que l'id reçu en paramètre correspond bien à un user
+        $user = $userRepository->find($userId);
+
+        if ($user === null) {
+            throw new NotFoundHttpException('Aucun utilisateur trouvé');
+        }
+
+        // Vérifier que le token en parametre correspond à celui enregistré en base de données
+        if ($user->getToken() !== $token) {
+            throw new TokenNotFoundException('Le jeton de sécurité ne correspond pas ou est périmé');
+        }
+
+        // Si OK, on crée le formulaire pour saisie du nouveau mot de passe
+        $form = $this->createForm(ResetPassType::class);
+        $form->handleRequest($request);
+
+        // Si formulaire est valide, on met à jour la base de données = nouveau mot de passe et token à null
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newPassword = $form->getData()['password'];
+            $newPasswordHashed = password_hash($newPassword, PASSWORD_ARGON2ID);
+
+            $user->setPassword($newPasswordHashed);
+            $user->setToken(null);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Votre mot de passe a bien été modifié');
+
+            return $this->redirectToRoute('security_login');
+        }
+
         return $this->render('security/reset_pass_page.html.twig', [
             'userId' => $userId,
-            'token' => $token
+            'token' => $token,
+            'formView' => $form->createView()
         ]);
     }
 }
